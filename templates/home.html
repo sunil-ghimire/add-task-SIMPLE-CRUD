@@ -1,0 +1,105 @@
+{% extends 'base_template.html' %}
+{% block title %}Home{% endblock title %}
+{% block custom_css %}
+<style>
+        body {
+            padding-top: 5rem;
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+{% endblock custom_css %}
+
+{% block body_data %}
+<body>
+{% include 'navbar.html' %}
+
+<main class="container">
+    <h2>Add Tasks</h2>
+    <br>
+    <form action="{% url 'add_tasks' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="">Title</label>
+            <input type="text" name="title" class="form-control" placeholder="Title..." required >
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="">TASK</label>
+            <textarea name="task" class="form-control" placeholder="Task..." rows="5" required></textarea>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="">Thumbnail</label>
+            <input name="thumbnail" type="file" class="form-control" required>
+        </div>
+        <br>
+        <div class="form-group d-grid gap-2">
+            <button type="submit" class="btn btn-success btn-block">ADD TASK</button>
+        </div>
+        <br>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endif %}
+                {% if message.tags == "success" %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </form>
+</main><!-- /.container -->
+<br>
+<hr>
+<br>
+<div class="container">
+    <div class="row">
+        <h2>ALL TASKS</h2>
+        <br>
+        <div class="accordion" id="accordionExample">
+            {% for task in all_tasks %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne{{ task.id }}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne{{ task.id }}"
+                                aria-expanded="true" aria-controls="collapseOne" style="color: #19865C">
+                           {{ task.title }}
+                        </button>
+
+                    </h2>
+                    <div id="collapseOne{{ task.id }}" class="accordion-collapse collapse show" aria-labelledby="headingOne{{ task.id }}"
+                         data-bs-parent="#accordionExample">
+                        <div class="accordion-body" >
+                            <img src="{{ task.thumbnail.url }}" alt="" style="width: 100px;">
+                            <p>{{ task.notes_data }}</p>
+                        </div>
+                         <a href="{% url 'delete_task' id=task.id %}" class="btn btn-danger m-3">Delete</a>
+                         <a href="{% url 'update_task' id=task.id %}" class="btn btn-info m-3">Update</a>
+                    </div>
+                </div>
+                <br>
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script src="https://getbootstrap.com/docs/5.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+{% endblock body_data %}
